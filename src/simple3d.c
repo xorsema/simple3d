@@ -92,6 +92,10 @@ void s3d_loop(){
   int quit = 0;
   playerinfo_t p = {8.0, 8.0, 0.0}, np;
   int keys[4] = {0, 0, 0, 0};
+  double fov = PI / 2.0;
+  double viewDistance = (SCREEN_WIDTH/2.0)/(tan(fov/2.0)*SCREEN_HEIGHT);
+  double cosa, sina;
+  
   while(!quit){
     while(SDL_PollEvent(&event)){
       switch(event.type){
@@ -135,16 +139,20 @@ void s3d_loop(){
 
     np = p;
     if(keys[0] && !keys[1]){
-      np.x += cos(p.angle)*MOVE_SPEED;
-      np.y += sin(p.angle)*MOVE_SPEED;
-      if(!s3d_checkcoll(np.x, np.y)){
+      cosa = cos(p.angle);
+      sina = sin(p.angle);
+      np.x += cosa*MOVE_SPEED;
+      np.y += sina*MOVE_SPEED;
+      if(!s3d_checkcoll(np.x+cosa*viewDistance, np.y+sina*viewDistance)){
 	p = np;
       }
     }
     if(keys[1] && !keys[0]){
-      np.x -= cos(p.angle)*MOVE_SPEED;
-      np.y -= sin(p.angle)*MOVE_SPEED;
-      if(!s3d_checkcoll(np.x, np.y)){
+      cosa = cos(p.angle);
+      sina = sin(p.angle);
+      np.x -= cosa*MOVE_SPEED;
+      np.y -= sina*MOVE_SPEED;
+      if(!s3d_checkcoll(np.x+cosa*viewDistance, np.y+sina*viewDistance)){
 	p = np;
       }
     }
@@ -160,8 +168,7 @@ void s3d_loop(){
     printf("X: %f Y: %f\n", p.x, p.y);
     SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);
-    /* Stuff goes here */
-    s3d_drawmap(&p, PI / 2.0);
+    s3d_drawmap(&p, fov);
     SDL_RenderPresent(g_renderer);
   }
 }
