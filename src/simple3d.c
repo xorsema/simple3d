@@ -158,6 +158,7 @@ void s3d_loop(){
     p.y = MIN(MAP_HEIGHT, MAX(p.y, 0));
     p.x = MIN(MAP_WIDTH, MAX(p.x, 0));
     printf("X: %f Y: %f\n", p.x, p.y);
+    SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);
     /* Stuff goes here */
     s3d_drawmap(&p, PI / 2.0);
@@ -186,17 +187,19 @@ void s3d_drawmap(const playerinfo_t *p, double fov){
   double f = -halfrange;
   int i = 0;
   double coshalfrange = cos(halfrange);
+
   for(; i < SCREEN_WIDTH; f += inc, i++){
     s3d_drawcol(i, SCREEN_HEIGHT*(coshalfrange/s3d_castray(p, f)));
   }
 }
 
 void s3d_drawcol(int x, int size){
-  static SDL_Rect r = {0, 0, 1, 0};
-  r.h = size;
-  r.y = (SCREEN_HEIGHT - size) / 2;
-  r.x = x;
-  SDL_RenderFillRect(g_renderer, &r);
+  static SDL_Rect rect = {0, 0, 1, 0};
+  rect.h = size;
+  rect.y = (SCREEN_HEIGHT - size) / 2;
+  rect.x = x;
+  SDL_SetRenderDrawColor(g_renderer, 255, 255, 255, 255);
+  SDL_RenderFillRect(g_renderer, &rect);
 }
 
 int s3d_checkcoll(double x, double y){
